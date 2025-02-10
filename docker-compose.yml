@@ -1,0 +1,6 @@
+services:
+  hopship.api:
+    image: ${DOCKER_REGISTRY-}hopshipapi
+    build:
+      context: .
+      dockerfile: HopShip.API/Dockerfile
