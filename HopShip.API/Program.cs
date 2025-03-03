@@ -1,4 +1,6 @@
+using HopShip.DatabaseService.Context;
 using HopShip.Service.ServicesCollection;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+var connection = builder.Configuration["Develop:Database:ConnectionStrings"];
+
+builder.Services.AddDbContext<ContextForDb>(options => options.UseNpgsql(connection), ServiceLifetime.Scoped);
+
 
 var app = builder.Build();
 

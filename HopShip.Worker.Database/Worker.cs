@@ -1,23 +1,30 @@
+using HopShip.Worker.Database.Migrations;
+
 namespace HopShip.Worker.Database
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
+        private readonly IMigrationOrchestrator _migrationOrchestrator;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IMigrationOrchestrator migrationOrchestrator, IServiceProvider serviceProvider)
         {
             _logger = logger;
+            _migrationOrchestrator = migrationOrchestrator;
+            _serviceProvider = serviceProvider;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            using(var scope = _serviceProvider.CreateScope())
             {
-                if (_logger.IsEnabled(LogLevel.Information))
+                while (!stoppingToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    var migration = scope.ServiceProvider.GetRequiredService<IMigrationOrchestrator>();
+
+                    await migration.ExecuteAsync(stoppingToken);
                 }
-                await Task.Delay(1000, stoppingToken);
             }
         }
     }

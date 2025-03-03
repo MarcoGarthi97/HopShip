@@ -1,4 +1,5 @@
-﻿using HopShip.Worker.Database.Context;
+﻿using HopShip.DatabaseService.Context;
+using HopShip.Worker.Database.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,14 @@ using System.Threading.Tasks;
 
 namespace HopShip.Worker.Database.Repository
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository
     {
-        public void CreateTable();
     }
 
     public class UserRepository : IUserRepository
     {
-        private readonly IDbContext<HopDbContext> _context;
-        public UserRepository(IDbContext<HopDbContext> dbContext)
+        private readonly IContextForDb<ContextForDb> _context;
+        public UserRepository(IContextForDb<ContextForDb> dbContext)
         {
             _context = dbContext;
         }
@@ -26,9 +26,8 @@ namespace HopShip.Worker.Database.Repository
                 Id SERIAL PRIMARY KEY,
                 Name VARCHAR(100) NOT NULL,
                 Email VARCHAR(100) NOT NULL UNIQUE,
-                CreatedAt DATETIME NOT NULL
-                );
-            )";
+                CreatedAt DATE NOT NULL
+                );";
 
             _context.ExceuteSqlRaw(query);
         }
