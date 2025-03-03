@@ -31,13 +31,24 @@ services:
     container_name: postgres_container
     restart: always
     ports:
-      - "5432:5432"
+      - "8001:5432"
     environment:
       POSTGRES_DB: HopShipDB
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-    volumes:
+    volumes: 
       - postgres_data:/var/lib/postgresql/data  # Persistenza dei dati
+
+  hopship.worker.database:
+    build:
+      context: .
+      dockerfile: HopShip.Worker.Database/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Postgres=Host=postgres;Port=5432;Database=HopShipDB;Username=user;Password=password
+    depends_on:
+      - postgres
+    restart: always 
 
 volumes:
   postgres_data:
