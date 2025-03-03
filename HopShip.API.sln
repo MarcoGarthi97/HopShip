@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopShip.Worker.Database", "
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{10899860-12B9-4258-A492-1F73DC3C7FF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopShip.DatabaseService", "..\HopShip.DatabaseService\HopShip.DatabaseService.csproj", "{1D303E78-FD52-4AAD-A392-FAFADFB5D50C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HopShip.Library", "..\HopShip.Library\HopShip.Library.csproj", "{78BC170B-45E8-4220-A5B4-18B37144BA43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,10 +47,10 @@ Global
 		{10899860-12B9-4258-A492-1F73DC3C7FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10899860-12B9-4258-A492-1F73DC3C7FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10899860-12B9-4258-A492-1F73DC3C7FF2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D303E78-FD52-4AAD-A392-FAFADFB5D50C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D303E78-FD52-4AAD-A392-FAFADFB5D50C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D303E78-FD52-4AAD-A392-FAFADFB5D50C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D303E78-FD52-4AAD-A392-FAFADFB5D50C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78BC170B-45E8-4220-A5B4-18B37144BA43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78BC170B-45E8-4220-A5B4-18B37144BA43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78BC170B-45E8-4220-A5B4-18B37144BA43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78BC170B-45E8-4220-A5B4-18B37144BA43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
