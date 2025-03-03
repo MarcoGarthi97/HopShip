@@ -10,6 +10,6 @@ builder.Services.AddSharedServices();
 var connection = builder.Configuration["Develop:Database:ConnectionStrings"];
 
 builder.Services.AddDbContext<HopDbContext>(options => options.UseNpgsql(connection));
-
+ 
 var host = builder.Build();
 host.Run();
