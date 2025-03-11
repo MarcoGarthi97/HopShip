@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HopShip.Data.Context
+namespace HopShip.Library.Context
 {
     [NotMapped]
     public abstract class BaseEntity

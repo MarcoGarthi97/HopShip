@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HopShip.Library\HopShip.Library.csproj" />
     <ProjectReference Include="..\HopShip.Data\HopShip.Data.csproj" />
+    <ProjectReference Include="..\HopShip.Library\HopShip.Library.csproj" />
   </ItemGroup>
 </Project>

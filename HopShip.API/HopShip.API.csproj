@@ -17,12 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HopShip.Library\HopShip.Library.csproj" />
+    <ProjectReference Include="..\HopShip.Library\HopShip.Library.csproj" />
     <ProjectReference Include="..\HopShip.Service\HopShip.Service.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
