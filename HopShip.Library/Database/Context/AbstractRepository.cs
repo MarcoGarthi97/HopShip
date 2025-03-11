@@ -65,5 +65,11 @@ namespace HopShip.Library.Database.Context
         {
             return Context.FirstOrDefaultAsync<T>(predicate, cancellationToken);
         }
+
+        /// <inheritdoc/>
+        public Task BulkInsertAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
+        {
+            return Context.BulkInsertAsync<T>(entities, cancellationToken);
+        }
     }
 }

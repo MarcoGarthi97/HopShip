@@ -18,7 +18,7 @@ namespace HopShip.Library.BackgroundService
             _serviceName = this.GetType().Name;
 
             // Leggiamo la configurazione dall'appsettings.json
-            _isEnabled = configuration.GetValue<bool>($"Services:{_serviceName}", false);
+            _isEnabled = configuration.GetValue<bool>($"Develop:Services:{_serviceName}", false);
 
             _logger.LogInformation($"Service {_serviceName} is {(_isEnabled ? "enabled" : "disabled")}");
         }

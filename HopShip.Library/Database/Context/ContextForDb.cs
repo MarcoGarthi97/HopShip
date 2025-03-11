@@ -18,6 +18,7 @@ namespace HopShip.Library.Database.Context
         TEntity? FirstOrDefault<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class;
         Task<TEntity?> FirstOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class;
         Task<TEntity?> FirstOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken) where TEntity : class;
+        Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken) where TEntity : class;
     }
 
     public class ContextForDb : DbContextModel, IContextForDb<ContextForDb>
@@ -64,6 +65,12 @@ namespace HopShip.Library.Database.Context
         public async Task<TEntity?> FirstOrDefaultAsync<TEntity>(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken) where TEntity : class
         {
             return await Set<TEntity>().FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken) where TEntity : class
+        {
+            await Set<TEntity>().AddRangeAsync(entities, cancellationToken);
+            await SaveChangesAsync(cancellationToken);
         }
     }
 }
