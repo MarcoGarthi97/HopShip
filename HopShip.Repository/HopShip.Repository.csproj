@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Scrutor" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HopShip.Data\HopShip.Data.csproj" />
+    <ProjectReference Include="..\HopShip.Library\HopShip.Library.csproj" />
+  </ItemGroup>
+
 </Project>

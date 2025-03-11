@@ -1,4 +1,4 @@
-using HopShip.DatabaseService.Context;
+using HopShip.Library.Database.Context;
 using HopShip.Worker.Database;
 using HopShip.Worker.Database.ServicesCollection;
 using Microsoft.EntityFrameworkCore;

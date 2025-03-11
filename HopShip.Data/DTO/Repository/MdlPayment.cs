@@ -1,4 +1,4 @@
-﻿using HopShip.Data.Context;
+﻿using HopShip.Library.Context;
 using HopShip.Data.Enum;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,7 +10,7 @@ namespace HopShip.Data.DTO.Repository
     {
         [Key]
         [Column("id")]
-        public string Id { get; set; }
+        public int Id { get; set; }
 
         [Column("orderid")]
         public string OrderId { get; set; }

@@ -1,5 +1,5 @@
 ﻿using HopShip.Data.DTO.Repository;
-using HopShip.DatabaseService.Context;
+using HopShip.Library.Database.Context;
 using HopShip.Worker.Database.Interface;
 
 namespace HopShip.Worker.Database.Repository
