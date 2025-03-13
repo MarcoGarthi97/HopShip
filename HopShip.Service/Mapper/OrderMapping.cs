@@ -15,15 +15,7 @@ namespace HopShip.Service.Mapper
         public OrderMapping()
         {
             CreateMap<MdlOrder, SrvOrder>().ReverseMap();
-        }
-    }
-
-    public class ProductMapping : Profile
-    {
-        public ProductMapping()
-        {
-            CreateMap<InsertProductRequest, SrvProduct>().ReverseMap();
-            CreateMap<SrvProduct, MdlProduct>().ReverseMap();
+            CreateMap<InsertOrderRequest, SrvOrder>();
         }
     }
 }

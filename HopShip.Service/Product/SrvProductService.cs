@@ -10,6 +10,7 @@ namespace HopShip.Service.Product
     {
         public Task InsertProductsAsync(IEnumerable<SrvProduct> srvProducts, CancellationToken cancellationToken);
         public Task<IEnumerable<SrvProduct>> GetProductAsync(CancellationToken cancellationToken);
+        public Task<IEnumerable<SrvProduct>> GetProductByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
     }
 
     public class SrvProductService : ISrvProductService
@@ -24,28 +25,44 @@ namespace HopShip.Service.Product
             _productRepository = mdlProductRepository;
         }
 
+        public async Task<IEnumerable<SrvProduct>> GetProductByIdsAsync(IEnumerable<int> ids, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start GetProductByIdsAsync");
+
+            IEnumerable<MdlProduct> mdlOrders = await _productRepository.FindAsync(x => ids.Contains(x.Id), cancellationToken);
+            IEnumerable<SrvProduct> srvProducts = _mapper.Map<IEnumerable<SrvProduct>>(mdlOrders);
+
+            _logger.LogInformation("End GetProductByIdsAsync");
+
+            return srvProducts;
+        }
+
         public async Task<IEnumerable<SrvProduct>> GetProductAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Start GerOrders");
+            _logger.LogInformation("Start GerOrdersAsync");
 
             IEnumerable<MdlProduct> mdlProducts = await _productRepository.FindAsync(x => x.IsActive, cancellationToken);
             IEnumerable<SrvProduct> srvProducts = _mapper.Map<IEnumerable<SrvProduct>>(mdlProducts);
 
-            _logger.LogInformation("End GerOrders");
+            _logger.LogInformation("End GerOrdersAsync");
 
             return srvProducts;
         }
 
         public async Task InsertProductsAsync(IEnumerable<SrvProduct> srvProducts, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Start InsertProducts");
+            _logger.LogInformation("Start InsertProductsAsync");
 
             IEnumerable<MdlProduct> mdlProducts = _mapper.Map<IEnumerable<MdlProduct>>(srvProducts);
-            mdlProducts.ToList().ForEach(x => x.IsActive = true);
+            mdlProducts.ToList().ForEach(x =>
+            {
+                x.IsActive = true;
+                x.CreatedAt = DateTime.UtcNow;
+            });
 
             await _productRepository.BulkInsertAsync(mdlProducts, cancellationToken);
 
-            _logger.LogInformation("End InsertProducts");
+            _logger.LogInformation("End InsertProductsAsync");
         }
     }
 }

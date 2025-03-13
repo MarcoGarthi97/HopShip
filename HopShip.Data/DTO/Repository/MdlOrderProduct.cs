@@ -14,8 +14,8 @@ namespace HopShip.Data.DTO.Repository
         public int OrderId { get; set; }
         [Column("productid")]
         public int ProductId { get; set; }
-        [Column("quantity")]
-        public int Quantity { get; set; }
+        [Column("stock")]
+        public int Stock { get; set; }
         [Column("unitprice")]
         public decimal UnitPrice { get; set; }
         [Column("discount")]

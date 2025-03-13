@@ -71,9 +71,18 @@ namespace HopShip.Library.Database.Interface
         /// <summary>
         /// Inserisce in blocco (bulk) una collezione di entità in maniera asincrona.
         /// </summary>
+        /// <param name="entity">L'entità da inserire</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>L'entità inserita</returns>
+        Task<T> InsertAsync(T entity, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Inserisce in blocco (bulk) una collezione di entità in maniera asincrona.
+        /// </summary>
         /// <param name="entities">Le entità da inserire</param>
         /// <param name="cancellationToken">Il token di cancellazione</param>
-        /// <returns>Task che rappresenta l'operazione asincrona</returns>
-        Task BulkInsertAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
+        /// <returns>Le entità inserite</returns>
+        Task<IEnumerable<T>> BulkInsertAsync(IEnumerable<T> entities,
+        CancellationToken cancellationToken);
     }
 }

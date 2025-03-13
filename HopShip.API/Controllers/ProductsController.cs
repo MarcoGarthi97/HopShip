@@ -26,7 +26,11 @@ namespace HopShip.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Start GetProductsAsync");
+
                 IEnumerable<SrvProduct> srvProducts = await _productService.GetProductAsync(cancellationToken);
+
+                _logger.LogInformation("End GetProductsAsync");
 
                 return Ok(srvProducts);
             }
@@ -43,8 +47,12 @@ namespace HopShip.API.Controllers
         {
             try
             {
+                _logger.LogInformation("Start InsertProductsAsync");
+
                 IEnumerable<SrvProduct> srvProducts = _mapper.Map<IEnumerable<SrvProduct>>(orders);
                 await _productService.InsertProductsAsync(srvProducts, cancellationToken);
+
+                _logger.LogInformation("End InsertProductsAsync");
 
                 return Ok(true);
             }
