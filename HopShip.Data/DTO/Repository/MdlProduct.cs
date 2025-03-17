@@ -21,11 +21,17 @@ namespace HopShip.Data.DTO.Repository
         [Column("price")]
         public decimal Price { get; set; }
 
+        [Column("discount")]
+        public decimal Discount { get; set; }
+
         [Column("stock")]
         public int Stock { get; set; }
 
         [Column("category")]
         public EnumCategoryProduct Category { get; set; }
+
+        [Column("isactive")]
+        public bool IsActive { get; set; }
 
         [Column("createdat")]
         public DateTime CreatedAt { get; set; }

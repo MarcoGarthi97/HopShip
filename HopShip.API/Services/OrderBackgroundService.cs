@@ -28,11 +28,11 @@ namespace HopShip.API.Services
                     {
                         var service = scope.ServiceProvider.GetRequiredService<ISrvOrderService>();
 
-                        IEnumerable<SrvOrder> orders = await service.GetOrders();
-                        if(orders.Any())
-                        {
+                        //IEnumerable<SrvOrder> orders = await service.GetOrdersAsync();
+                        //if(orders.Any())
+                        //{
 
-                        }
+                        //}
                     }
                 }
                 catch (Exception ex)

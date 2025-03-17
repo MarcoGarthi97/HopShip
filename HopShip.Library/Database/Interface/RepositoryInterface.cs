@@ -67,5 +67,22 @@ namespace HopShip.Library.Database.Interface
         /// <param name="cancellationToken">Il token di cancellazione</param>
         /// <returns>La prima entità che soddisfa il predicato o null</returns>
         Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Inserisce in blocco (bulk) una collezione di entità in maniera asincrona.
+        /// </summary>
+        /// <param name="entity">L'entità da inserire</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>L'entità inserita</returns>
+        Task<T> InsertAsync(T entity, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Inserisce in blocco (bulk) una collezione di entità in maniera asincrona.
+        /// </summary>
+        /// <param name="entities">Le entità da inserire</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>Le entità inserite</returns>
+        Task<IEnumerable<T>> BulkInsertAsync(IEnumerable<T> entities,
+        CancellationToken cancellationToken);
     }
 }
