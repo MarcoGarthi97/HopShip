@@ -16,6 +16,7 @@ namespace HopShip.Service.Order
     public interface ISrvOrderService
     {
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(CancellationToken cancellationToken);
+        public Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
         public Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken);
     }
 
@@ -44,6 +45,18 @@ namespace HopShip.Service.Order
             return srvOrders;
         }
 
+        public async Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start GetOrdersAsync");
+
+            IEnumerable<MdlOrder> mdlOrders = await _repositoryOrder.FindAsync(x => x.Status == EnumStatusOrder.OrderCreated && ids.Contains(x.Id), cancellationToken);
+            IEnumerable<SrvOrder> srvOrders = _mapper.Map<IEnumerable<SrvOrder>>(mdlOrders);
+
+            _logger.LogInformation("End GetOrdersAsync");
+
+            return srvOrders;
+        }
+
         public async Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Start InsertOrdersAsync");
@@ -60,6 +73,10 @@ namespace HopShip.Service.Order
             return srvOrder;
         }
 
-        
+        public async Task UpdateOrdersStatus(SrvOrder srvOrder, CancellationToken cancellationToken)
+        {
+            //TODO: Manca l'update e la delete nel mio ORM
+            //await _repositoryOrder.
+        }
     }
 }

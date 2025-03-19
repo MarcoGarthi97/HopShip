@@ -2,6 +2,7 @@
 using HopShip.Data.DTO.RabbitMQ;
 using HopShip.Data.Enum;
 using HopShip.Library.RabbitMQ;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -16,8 +17,8 @@ namespace HopShip.Service.RabbitMQ
 {
     public interface ISrvRabbitMQService
     {
-        public Task ToEnqueueAsync(EnumQueueRabbit enumQueueRabbit);
-        public Task<QueueMessageRabbitMQ?> GetMessageAsync(EnumQueueRabbit enumQueueRabbit);
+        public Task ToEnqueueAsync(EnumQueueRabbit enumQueueRabbit, QueueMessageRabbitMQ queueMessageRabbitMQ);
+        public Task<QueueMessageRabbitMQ> GetMessageAsync(EnumQueueRabbit enumQueueRabbit);
     }
 
     public class SrvRabbitMQService : ISrvRabbitMQService
@@ -25,6 +26,7 @@ namespace HopShip.Service.RabbitMQ
         private readonly ILogger<SrvRabbitMQService> _logger;
         private readonly IMapper _mapper;
         private readonly IFactoryRabbitMQ _factoryRabbitMQ;
+        private readonly IServiceProvider _serviceProvider;
         private IModel? _channel;
 
         public SrvRabbitMQService(ILogger<SrvRabbitMQService> logger, IMapper mapper, IFactoryRabbitMQ factoryRabbitMQ)
@@ -33,6 +35,50 @@ namespace HopShip.Service.RabbitMQ
             _mapper = mapper;
             _factoryRabbitMQ = factoryRabbitMQ;
         }
+
+        //public async Task<QueueMessageRabbitMQ> GetMessageAsync(EnumQueueRabbit enumQueueRabbit)
+        //{
+        //    var messageRabbitMQ = new QueueMessageRabbitMQ();
+
+        //    await GetQueueDeclareAsync(enumQueueRabbit);
+
+        //    _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+        //    var consumer = new EventingBasicConsumer(_channel);
+        //    consumer.Received += async (sender, x) =>
+        //    {
+        //        var body = x.Body.ToArray();
+        //        var message = Encoding.UTF8.GetString(body);
+
+        //        try
+        //        {
+        //            if (!string.IsNullOrEmpty(message))
+        //            {
+        //                using var processingScope = _serviceProvider.CreateScope();
+        //                messageRabbitMQ = JsonSerializer.Deserialize<QueueMessageRabbitMQ>(message);
+
+        //                _channel.BasicAck(x.DeliveryTag, false);
+        //            }
+        //            else
+        //            {
+        //                _channel.BasicNack(x.DeliveryTag, false, true);
+        //            }
+
+        //            _channel.BasicConsume(queue: GetNameQueue(enumQueueRabbit),
+        //                            autoAck: false,
+        //                            consumer: consumer);
+
+        //            _logger.LogInformation("End GetMessageAsync");
+        //        }
+        //        catch(Exception ex)
+        //        {
+        //            _logger.LogError(ex, ex.Message);
+        //            throw;
+        //        }
+        //    };
+
+        //    return messageRabbitMQ;
+        //}
 
         public async Task ToEnqueueAsync(EnumQueueRabbit enumQueueRabbit, QueueMessageRabbitMQ queueMessageRabbitMQ)
         {

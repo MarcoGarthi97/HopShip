@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HopShip.Data.DTO.RabbitMQ;
 using HopShip.Data.DTO.Request;
 using HopShip.Data.DTO.Service;
 using HopShip.Service.Order;
@@ -44,7 +45,9 @@ namespace HopShip.API.Controllers
                 srvOrderProducts.ToList().ForEach(x => x.OrderId = srvOrder.Id);
                 await _serviceOrderProduct.InsertOrderProductAsync(srvOrderProducts, cancellationToken);
 
-                await _rabbitMQService.ToEnqueueAsync(Data.Enum.EnumQueueRabbit.OrderService);
+                var messageRabbit = _mapper.Map<QueueMessageRabbitMQ>(srvOrder);
+
+                await _rabbitMQService.ToEnqueueAsync(Data.Enum.EnumQueueRabbit.OrderService, messageRabbit);
 
                 _logger.LogInformation("End InsertOrdersAsync");
 

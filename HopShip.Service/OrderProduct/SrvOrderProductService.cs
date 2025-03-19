@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HopShip.Data.DTO.Repository;
 using HopShip.Data.DTO.Service;
+using HopShip.Data.Enum;
 using HopShip.Repository.OrderProduct;
 using HopShip.Service.Product;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace HopShip.Service.OrderProduct
     public interface ISrvOrderProductService
     {
         public Task<IEnumerable<SrvOrderProduct>> CheckOrderProductsBeforeAsync(List<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
+        public EnumStatusOrder CheckOrderProductsAfter(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
         public Task InsertOrderProductAsync(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
     }
 
@@ -63,6 +65,36 @@ namespace HopShip.Service.OrderProduct
             _logger.LogInformation("End CheckOrdersBeforeAsync");
 
             return srvOrderProducts;
+        }
+
+        public EnumStatusOrder CheckOrderProductsAfter(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start CheckOrderProductsAfterAsync");
+
+            try
+            {
+                foreach (var orderProduct in srvOrderProducts)
+                {
+                    decimal discount = (100 - orderProduct.Discount) / 100;
+                    decimal total = orderProduct.Stock * orderProduct.UnitPrice;
+                    decimal totalPrice = total * discount;
+
+                    if(totalPrice != orderProduct.TotalPrice)
+                    {
+                        return EnumStatusOrder.OrderNotValidated;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                return EnumStatusOrder.OrderFailed;
+            }
+
+            _logger.LogInformation("End CheckOrderProductsAfterAsync");
+
+            return EnumStatusOrder.OrderValidated;
         }
     }
 }
