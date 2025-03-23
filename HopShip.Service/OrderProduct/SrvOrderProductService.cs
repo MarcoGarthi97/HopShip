@@ -10,6 +10,7 @@ namespace HopShip.Service.OrderProduct
 {
     public interface ISrvOrderProductService
     {
+        public Task<IEnumerable<SrvOrderProduct>> GerOrderProductsByOrderIdAsync(int id, CancellationToken cancellationToken);
         public Task<IEnumerable<SrvOrderProduct>> CheckOrderProductsBeforeAsync(List<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
         public EnumStatusOrder CheckOrderProductsAfter(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
         public Task InsertOrderProductAsync(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken);
@@ -28,6 +29,18 @@ namespace HopShip.Service.OrderProduct
             _mapper = mapper;
             _repositoryOrderProduct = repositoryOrderProduct;
             _serviceProduct = srvProductService;
+        }
+
+        public async Task<IEnumerable<SrvOrderProduct>> GerOrderProductsByOrderIdAsync(int id, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start GerOrderProductsByOrderIdAsync");
+
+            IEnumerable<MdlOrderProduct> mdlOrderProducts = await _repositoryOrderProduct.FindAsync(x => x.OrderId == id, cancellationToken);
+            IEnumerable<SrvOrderProduct> srvOrderProducts = _mapper.Map<IEnumerable<SrvOrderProduct>>(mdlOrderProducts);
+
+            _logger.LogInformation("End GerOrderProductsByOrderIdAsync");
+
+            return srvOrderProducts;
         }
 
         public async Task InsertOrderProductAsync(IEnumerable<SrvOrderProduct> srvOrderProducts, CancellationToken cancellationToken)
@@ -75,6 +88,11 @@ namespace HopShip.Service.OrderProduct
             {
                 foreach (var orderProduct in srvOrderProducts)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return EnumStatusOrder.OrderFailed;
+                    }
+
                     decimal discount = (100 - orderProduct.Discount) / 100;
                     decimal total = orderProduct.Stock * orderProduct.UnitPrice;
                     decimal totalPrice = total * discount;

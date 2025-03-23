@@ -4,6 +4,7 @@ using HopShip.Service.ServicesCollection;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using HopShip.Repository.ServicesCollection;
+using HopShip.Library.ServicesCollection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddScoped<IContextForDb<ContextForDb>>(provider => provider.Get
 
 builder.Services.AddSharedRepositoryServices();
 builder.Services.AddSharedServices();
+builder.Services.AddSharedLibraryServices();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

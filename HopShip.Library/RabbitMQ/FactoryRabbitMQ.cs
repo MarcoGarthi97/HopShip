@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HopShip.Library.ServicesCollection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
@@ -10,7 +11,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace HopShip.Library.RabbitMQ
 {
-    public interface IFactoryRabbitMQ
+    public interface IFactoryRabbitMQ : IForServiceCollectionExtension
     {
         public Task<IModel> GetChannelAsync();
         public Task CloseAsync();

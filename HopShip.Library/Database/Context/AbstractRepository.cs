@@ -76,6 +76,40 @@ namespace HopShip.Library.Database.Context
         public Task<IEnumerable<T>> BulkInsertAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
         {
             return Context.BulkInsertAsync<T>(entities, cancellationToken);
+        }/// <inheritdoc/>
+        public bool Delete(T entity)
+        {
+            return Context.Delete(entity);
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> DeleteAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            return Context.DeleteAsync(entity, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<bool> BulkDeleteAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        {
+            return Context.BulkDeleteAsync(entities, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public T Update(T entity)
+        {
+            return Context.Update(entity);
+        }
+
+        /// <inheritdoc/>
+        public Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            return Context.UpdateAsync(entity, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public Task<IEnumerable<T>> BulkUpdateAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        {
+            return Context.BulkUpdateAsync(entities, cancellationToken);
         }
     }
 }

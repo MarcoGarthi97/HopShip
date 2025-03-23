@@ -10,5 +10,12 @@ namespace HopShip.Data.DTO.RabbitMQ
     {
         //public bool Start => true;
         public int Id { get; set; }
+
+        public QueueMessageRabbitMQ() { }
+
+        public QueueMessageRabbitMQ(int id)
+        {
+            Id = id;
+        }
     }
 }

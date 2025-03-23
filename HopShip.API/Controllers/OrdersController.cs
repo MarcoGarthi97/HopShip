@@ -47,7 +47,7 @@ namespace HopShip.API.Controllers
 
                 var messageRabbit = _mapper.Map<QueueMessageRabbitMQ>(srvOrder);
 
-                await _rabbitMQService.ToEnqueueAsync(Data.Enum.EnumQueueRabbit.OrderService, messageRabbit);
+                await _rabbitMQService.EnqueueMessageAsync(Data.Enum.EnumQueueRabbit.OrderService, messageRabbit);
 
                 _logger.LogInformation("End InsertOrdersAsync");
 

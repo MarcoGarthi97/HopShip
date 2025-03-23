@@ -21,7 +21,12 @@ namespace HopShip.Library.Database.Context
         Task<TEntity> InsertAsync<TEntity>(TEntity entity, CancellationToken cancellationToken)
         where TEntity : class;
         Task<IEnumerable<TEntity>> BulkInsertAsync<TEntity>(IEnumerable<TEntity> entities,
-        CancellationToken cancellationToken) where TEntity : class;
+        CancellationToken cancellationToken) where TEntity : class; bool Delete<TEntity>(TEntity entity) where TEntity : class;
+        Task<bool> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
+        Task<bool> BulkDeleteAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class;
+        TEntity Update<TEntity>(TEntity entity) where TEntity : class;
+        Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
+        Task<IEnumerable<TEntity>> BulkUpdateAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class;
     }
 
     public class ContextForDb : DbContextModel, IContextForDb<ContextForDb>
@@ -86,6 +91,44 @@ namespace HopShip.Library.Database.Context
             await Set<TEntity>().AddRangeAsync(entities, cancellationToken);
             await SaveChangesAsync(cancellationToken);
 
+            return entities;
+        }
+        public bool Delete<TEntity>(TEntity entity) where TEntity : class
+        {
+            Set<TEntity>().Remove(entity);
+            return SaveChanges() > 0;
+        }
+
+        public async Task<bool> DeleteAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class
+        {
+            Set<TEntity>().Remove(entity);
+            return await SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public async Task<bool> BulkDeleteAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class
+        {
+            Set<TEntity>().RemoveRange(entities);
+            return await SaveChangesAsync(cancellationToken) > 0;
+        }
+
+        public TEntity Update<TEntity>(TEntity entity) where TEntity : class
+        {
+            Set<TEntity>().Update(entity);
+            SaveChanges();
+            return entity;
+        }
+
+        public async Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class
+        {
+            Set<TEntity>().Update(entity);
+            await SaveChangesAsync(cancellationToken);
+            return entity;
+        }
+
+        public async Task<IEnumerable<TEntity>> BulkUpdateAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class
+        {
+            Set<TEntity>().UpdateRange(entities);
+            await SaveChangesAsync(cancellationToken);
             return entities;
         }
     }
