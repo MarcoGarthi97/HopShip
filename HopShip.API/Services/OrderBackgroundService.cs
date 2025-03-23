@@ -33,14 +33,7 @@ namespace HopShip.API.Services
                         if(rabbitMessage != null)
                         {
                             var orderService = scope.ServiceProvider.GetRequiredService<ISrvOrderService>();
-                            IEnumerable<SrvOrder> orders = await orderService.GetOrdersAsync(stoppingToken);
-                            if (orders.Any())
-                            {
-                                foreach (var order in orders)
-                                {
-
-                                }
-                            }
+                            //Get order by id
                         }
                     }
                 }
