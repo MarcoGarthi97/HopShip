@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HopShip.Data.DTO.RabbitMQ;
 using HopShip.Data.DTO.Repository;
 using HopShip.Data.DTO.Request;
 using HopShip.Data.DTO.Service;
@@ -16,6 +17,8 @@ namespace HopShip.Service.Mapper
         {
             CreateMap<MdlOrder, SrvOrder>().ReverseMap();
             CreateMap<InsertOrderRequest, SrvOrder>();
+            CreateMap<SrvOrder, QueueMessageRabbitMQ>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(from => from.Id));
         }
     }
 }

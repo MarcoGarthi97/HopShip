@@ -83,6 +83,50 @@ namespace HopShip.Library.Database.Interface
         /// <param name="cancellationToken">Il token di cancellazione</param>
         /// <returns>Le entità inserite</returns>
         Task<IEnumerable<T>> BulkInsertAsync(IEnumerable<T> entities,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken);/// <summary>
+                                             /// Elimina un'entità dal database.
+                                             /// </summary>
+                                             /// <param name="entity">L'entità da eliminare</param>
+                                             /// <returns>Un valore booleano che indica se l'eliminazione è avvenuta con successo</returns>
+        bool Delete(T entity);
+
+        /// <summary>
+        /// Elimina un'entità dal database in modo asincrono.
+        /// </summary>
+        /// <param name="entity">L'entità da eliminare</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>Un valore booleano che indica se l'eliminazione è avvenuta con successo</returns>
+        Task<bool> DeleteAsync(T entity, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Elimina in blocco una collezione di entità dal database in modo asincrono.
+        /// </summary>
+        /// <param name="entities">Le entità da eliminare</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>Un valore booleano che indica se l'eliminazione è avvenuta con successo</returns>
+        Task<bool> BulkDeleteAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Aggiorna un'entità nel database.
+        /// </summary>
+        /// <param name="entity">L'entità da aggiornare</param>
+        /// <returns>L'entità aggiornata</returns>
+        T Update(T entity);
+
+        /// <summary>
+        /// Aggiorna un'entità nel database in modo asincrono.
+        /// </summary>
+        /// <param name="entity">L'entità da aggiornare</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>L'entità aggiornata</returns>
+        Task<T> UpdateAsync(T entity, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Aggiorna in blocco una collezione di entità nel database in modo asincrono.
+        /// </summary>
+        /// <param name="entities">Le entità da aggiornare</param>
+        /// <param name="cancellationToken">Il token di cancellazione</param>
+        /// <returns>Le entità aggiornate</returns>
+        Task<IEnumerable<T>> BulkUpdateAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
     }
 }

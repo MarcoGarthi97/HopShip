@@ -16,7 +16,9 @@ namespace HopShip.Service.Order
     public interface ISrvOrderService
     {
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(CancellationToken cancellationToken);
+        public Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
         public Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken);
+        public Task UpdateOrdersStatusAsync(SrvOrder srvOrder, CancellationToken cancellationToken);
     }
 
     public class SrvOrderService : ISrvOrderService
@@ -44,6 +46,18 @@ namespace HopShip.Service.Order
             return srvOrders;
         }
 
+        public async Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start GetOrdersAsync");
+
+            IEnumerable<MdlOrder> mdlOrders = await _repositoryOrder.FindAsync(x => x.Status == EnumStatusOrder.OrderCreated && ids.Contains(x.Id), cancellationToken);
+            IEnumerable<SrvOrder> srvOrders = _mapper.Map<IEnumerable<SrvOrder>>(mdlOrders);
+
+            _logger.LogInformation("End GetOrdersAsync");
+
+            return srvOrders;
+        }
+
         public async Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Start InsertOrdersAsync");
@@ -60,6 +74,14 @@ namespace HopShip.Service.Order
             return srvOrder;
         }
 
-        
+        public async Task UpdateOrdersStatusAsync(SrvOrder srvOrder, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start UpdateOrdersStatus");
+
+            MdlOrder mdlOrder = _mapper.Map<MdlOrder>(srvOrder);
+            await _repositoryOrder.UpdateAsync(mdlOrder, cancellationToken);
+
+            _logger.LogInformation("End UpdateOrdersStatus");
+        }
     }
 }

@@ -10,8 +10,4 @@
     <ProjectReference Include="..\HopShip.Library\HopShip.Library.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\RabbitMQ\" />
-  </ItemGroup>
-
 </Project>
