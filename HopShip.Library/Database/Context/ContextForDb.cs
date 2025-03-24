@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -113,23 +114,138 @@ namespace HopShip.Library.Database.Context
 
         public TEntity Update<TEntity>(TEntity entity) where TEntity : class
         {
-            Set<TEntity>().Update(entity);
+            var entry = Entry(entity);
+
+            if (entry.State == EntityState.Detached)
+            {
+                var existingEntity = Set<TEntity>()
+                    .Local
+                    .FirstOrDefault(e => HasSameKey(e, entity));
+
+                if (existingEntity != null)
+                {
+                    Entry(existingEntity).State = EntityState.Detached;
+                }
+
+                entry.State = EntityState.Modified;
+            }
+            else
+            {
+                entry.State = EntityState.Modified;
+            }
+
             SaveChanges();
+
             return entity;
         }
 
         public async Task<TEntity> UpdateAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class
         {
-            Set<TEntity>().Update(entity);
-            await SaveChangesAsync(cancellationToken);
-            return entity;
+            try
+            {
+                ConvertDateTimeFields(entity);
+
+                var entry = Entry(entity);
+
+                if (entry.State == EntityState.Detached)
+                {
+                    var existingEntity = Set<TEntity>()
+                        .Local
+                        .FirstOrDefault(e => HasSameKey(e, entity));
+
+                    if (existingEntity != null)
+                    {
+                        Entry(existingEntity).State = EntityState.Detached;
+                    }
+
+                    entry.State = EntityState.Modified;
+                }
+                else
+                {
+                    entry.State = EntityState.Modified;
+                }
+
+                await SaveChangesAsync(cancellationToken);
+
+                return entity;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<TEntity>> BulkUpdateAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class
         {
-            Set<TEntity>().UpdateRange(entities);
+            foreach(var entity in entities)
+            {
+                var entry = Entry(entity);
+
+                if (entry.State == EntityState.Detached)
+                {
+                    var existingEntity = Set<TEntity>()
+                        .Local
+                        .FirstOrDefault(e => HasSameKey(e, entity));
+
+                    if (existingEntity != null)
+                    {
+                        Entry(existingEntity).State = EntityState.Detached;
+                    }
+
+                    entry.State = EntityState.Modified;
+                }
+                else
+                {
+                    entry.State = EntityState.Modified;
+                }
+            }
+
             await SaveChangesAsync(cancellationToken);
+
             return entities;
+        }
+
+        private bool HasSameKey<TEntity>(TEntity entity1, TEntity entity2) where TEntity : class
+        {
+            var keyProperties = Model.FindEntityType(typeof(TEntity))
+                ?.FindPrimaryKey()
+                ?.Properties;
+
+            if (keyProperties == null)
+                return false;
+
+            foreach (var keyProperty in keyProperties)
+            {
+                var propertyName = keyProperty.Name;
+                var value1 = entity1.GetType().GetProperty(propertyName)?.GetValue(entity1);
+                var value2 = entity2.GetType().GetProperty(propertyName)?.GetValue(entity2);
+
+                if (!Equals(value1, value2))
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void ConvertDateTimeFields<TEntity>(TEntity entity) where TEntity : class
+        {
+            var properties = typeof(TEntity)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?));
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(entity);
+                if (value != null)
+                {
+                    var date = (DateTime)value;
+
+                    if (date.Kind != DateTimeKind.Utc)
+                    {
+                        property.SetValue(entity, date.ToUniversalTime());
+                    }
+                }
+            }
         }
     }
 }

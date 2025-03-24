@@ -136,12 +136,36 @@ namespace HopShip.Service.RabbitMQ
 
             _channel!.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
-            var consumer = new EventingBasicConsumer(_channel);
+            var consumer = new AsyncEventingBasicConsumer(_channel);
 
             consumer.Received += async (model, x) =>
             {
-                var body = x.Body.ToArray();
-                await BasicAck(body, messageHandler, x.DeliveryTag, cancellationToken);
+                try
+                {
+                    var body = x.Body.ToArray();
+                    string messageJson = Encoding.UTF8.GetString(body);
+
+                    if (!string.IsNullOrEmpty(messageJson))
+                    {
+                        var message = JsonSerializer.Deserialize<QueueMessageRabbitMQ>(messageJson);
+
+                        if (message != null)
+                        {
+                            await messageHandler(message);
+                            _channel.BasicAck(x.DeliveryTag, false);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("Impossibile convertire il messaggio JSON");
+                            _channel.BasicNack(x.DeliveryTag, false, true);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                    _channel.BasicNack(x.DeliveryTag, false, true);
+                }
             };
 
             string consumerTag = _channel!.BasicConsume(queue: GetNameQueue(queueType), autoAck: false, consumer: consumer);
@@ -157,7 +181,7 @@ namespace HopShip.Service.RabbitMQ
                         _channel.BasicCancel(tag);
                         _activeConsumers.Remove(GetNameQueue(queueType));
 
-                        _logger.LogInformation("Consumer delete from queue: " + GetNameQueue(queueType));
+                        _logger.LogInformation("Consumer rimosso dalla coda: " + GetNameQueue(queueType));
                     }
                 }
                 catch (Exception ex)
