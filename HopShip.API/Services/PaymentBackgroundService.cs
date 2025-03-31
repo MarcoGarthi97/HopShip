@@ -4,46 +4,42 @@ using HopShip.Data.Enum;
 using HopShip.Library.BackgroundService;
 using HopShip.Service.Order;
 using HopShip.Service.OrderProduct;
+using HopShip.Service.Payment;
 using HopShip.Service.RabbitMQ;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HopShip.API.Services
 {
-    public class OrderBackgroundService : IstanceBackgroundService
+    public class PaymentBackgroundService : IstanceBackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
 
         private ISrvRabbitMQService _rabbitService;
-        private ISrvOrderService _orderService;
-        private ISrvOrderProductService _orderProductService;
+        private ISrvPaymentService _paymentService;
         private readonly int _processInterval;
         private readonly int _batchSize;
         private readonly bool _useSubscriptionMode;
 
         private CancellationTokenSource _cancellationTokenSource;
 
-        public OrderBackgroundService(
-        ILogger<OrderBackgroundService> logger,
-        IConfiguration configuration,
-        IServiceProvider serviceProvider)
-        : base(logger, configuration) 
+        public PaymentBackgroundService(ILogger<IstanceBackgroundService> logger, IConfiguration configuration, IServiceProvider serviceProvider) : base(logger, configuration)
         {
             _serviceProvider = serviceProvider;
             _processInterval = configuration.GetValue<int>("Develop:RabbitMQ:ProcessInterval", 10);
             _batchSize = configuration.GetValue<int>("Develop:RabbitMQ:Batchsize", 10);
-            _useSubscriptionMode= configuration.GetValue<bool>("Develop:RabbitMQ:UseSubscriptionMode", true);
+            _useSubscriptionMode = configuration.GetValue<bool>("Develop:RabbitMQ:UseSubscriptionMode", true);
         }
 
         protected override async Task ExecuteServiceAsync(CancellationToken stoppingToken)
         {
-            while(!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Start ExecuteServiceAsync");
 
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     _rabbitService = scope.ServiceProvider.GetRequiredService<ISrvRabbitMQService>();
-                    _orderService = scope.ServiceProvider.GetRequiredService<ISrvOrderService>();
-                    _orderProductService = scope.ServiceProvider.GetRequiredService<ISrvOrderProductService>();
+                    _paymentService = scope.ServiceProvider.GetRequiredService<ISrvPaymentService>();
                 }
 
                 try
@@ -78,7 +74,7 @@ namespace HopShip.API.Services
 
             _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            await _rabbitService.SubscribeAsync(EnumQueueRabbit.OrderService, async (message) => await ProcessOrderMessageAsync(message, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
+            await _rabbitService.SubscribeAsync(EnumQueueRabbit.OrderService, async (message) => await ProcessPaymentMessageAsync(message, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
 
             try
             {
@@ -87,7 +83,7 @@ namespace HopShip.API.Services
             catch (TaskCanceledException)
             {
                 _logger.LogInformation("Subscribe expired");
-            }           
+            }
 
             _logger.LogInformation("End SubscriptionModeAsync");
         }
@@ -104,7 +100,7 @@ namespace HopShip.API.Services
                 {
                     await _rabbitService.ProcessMessageAsync(
                             EnumQueueRabbit.OrderService,
-                            async (message) => await ProcessOrderMessageAsync(message, stoppingToken),
+                            async (message) => await ProcessPaymentMessageAsync(message, stoppingToken),
                             _batchSize,
                             stoppingToken);
                 }
@@ -126,20 +122,25 @@ namespace HopShip.API.Services
             }
         }
 
-        private async Task ProcessOrderMessageAsync(QueueMessageRabbitMQ message, CancellationToken cancellationToken)
+        private async Task ProcessPaymentMessageAsync(QueueMessageRabbitMQ message, CancellationToken cancellationToken)
         {
             try
             {
                 _logger.LogInformation("Start ProcessOrderMessageAsync");
 
-                var order = await _orderService.GetOrderAsync(message.Id, cancellationToken);
+                SrvPayment srvPayment = await _paymentService.GetPaymentByOrderIdAsync(message.Id, cancellationToken);
+                srvPayment.PaymentStatus = EnumStatusPayment.Processing;
 
-                var statusOrder = await ProcessOrderAsync(order, cancellationToken);
-                if (statusOrder == EnumStatusOrder.OrderValidated)
+                await _paymentService.UpdatePaymentAsync(srvPayment, cancellationToken);
+
+                srvPayment.PaymentStatus = await _paymentService.CheckPaymentAsync(srvPayment, cancellationToken);
+                await _paymentService.UpdatePaymentAsync(srvPayment, cancellationToken);
+
+                if (srvPayment.PaymentStatus == EnumStatusPayment.Completed)
                 {
-                    QueueMessageRabbitMQ messageforQueue = new QueueMessageRabbitMQ(order.Id);
+                    QueueMessageRabbitMQ queueMessageRabbitMQ = new() { Id = message.Id };
 
-                    await _rabbitService.EnqueueMessageAsync(EnumQueueRabbit.PaymentService, messageforQueue);
+                    await _rabbitService.EnqueueMessageAsync(EnumQueueRabbit.ShippingService, queueMessageRabbitMQ);
                 }
             }
             catch (Exception ex)
@@ -148,32 +149,6 @@ namespace HopShip.API.Services
             }
 
             _logger.LogInformation("End ProcessOrderMessageAsync");
-        }
-
-        private async Task<EnumStatusOrder> ProcessOrderAsync(SrvOrder order, CancellationToken cancellationToken)
-        {
-            try
-            {
-                _logger.LogInformation("Start ProcessOrderAsync");
-
-                var orderProducts = await _orderProductService.GerOrderProductsByOrderIdAsync(order.Id, cancellationToken);
-
-                var resultCheck = _orderProductService.CheckOrderProductsAfter(orderProducts, cancellationToken);
-                order.Status = resultCheck;
-
-                await _orderService.UpdateOrdersStatusAsync(order, cancellationToken);
-
-                return resultCheck;
-
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
-            }
-
-            _logger.LogInformation("End ProcessOrderAsync");
-
-            return EnumStatusOrder.OrderFailed;
         }
     }
 }

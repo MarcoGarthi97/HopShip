@@ -15,6 +15,7 @@ namespace HopShip.Service.Order
 {
     public interface ISrvOrderService
     {
+        public Task<SrvOrder> GetOrderAsync(int id, CancellationToken cancellationToken);
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(CancellationToken cancellationToken);
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
         public Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken);
@@ -32,6 +33,27 @@ namespace HopShip.Service.Order
             _logger = logger;
             _repositoryOrder = mdlOrderRepository;
             _mapper = mapper;
+        }
+
+        public async Task<SrvOrder> GetOrderAsync(int id, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Start GetOrderAsync");
+
+            MdlOrder? mdlOrders = await _repositoryOrder.FirstOrDefaultAsync(x => x.Status == EnumStatusOrder.OrderCreated && x.Id == id, cancellationToken);
+            if(mdlOrders != null)
+            {
+                SrvOrder srvOrders = _mapper.Map<SrvOrder>(mdlOrders);
+
+                _logger.LogInformation("End GetOrderAsync");
+
+                return srvOrders;
+            }
+            else
+            {
+                _logger.LogError("Order not found");
+
+                throw new Exception("Order not found");
+            }
         }
 
         public async Task<IEnumerable<SrvOrder>> GetOrdersAsync(CancellationToken cancellationToken)

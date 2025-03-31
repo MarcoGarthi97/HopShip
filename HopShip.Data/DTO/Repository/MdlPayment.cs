@@ -13,13 +13,13 @@ namespace HopShip.Data.DTO.Repository
         public int Id { get; set; }
 
         [Column("orderid")]
-        public string OrderId { get; set; }
+        public int OrderId { get; set; }
 
         [Column("paymentstatus")]
         public EnumStatusPayment PaymentStatus { get; set; }
 
         [Column("paymentdate")]
-        public DateTime PaymentDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
 
         [Column("amount")]
         public decimal Amount { get; set; }
@@ -28,6 +28,6 @@ namespace HopShip.Data.DTO.Repository
         public EnumMethodPayment PaymentMethod { get; set; }
 
         [Column("createdat")]
-        public int CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
