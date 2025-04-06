@@ -1,5 +1,5 @@
+using HopShip.Library.Database.Context;
 using HopShip.Worker.Database;
-using HopShip.Worker.Database.Context;
 using HopShip.Worker.Database.ServicesCollection;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,9 +7,12 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddSharedServices();
 
-var connection = builder.Configuration["Develop:Database:ConnectionStrings"];
+var configurations = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+var connection = configurations["Develop:DataBase:ConnectionString"];
 
-builder.Services.AddDbContext<HopDbContext>(options => options.UseNpgsql(connection));
- 
+
+builder.Services.AddDbContext<ContextForDb>(options => options.UseNpgsql(connection), ServiceLifetime.Scoped);
+builder.Services.AddScoped<IContextForDb<ContextForDb>, ContextForDb>();
+
 var host = builder.Build();
 host.Run();
