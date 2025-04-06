@@ -97,7 +97,7 @@ namespace HopShip.Service.OrderProduct
                     decimal total = orderProduct.Stock * orderProduct.UnitPrice;
                     decimal totalPrice = total * discount;
 
-                    if(totalPrice != orderProduct.TotalPrice)
+                    if((int)totalPrice != (int)orderProduct.TotalPrice)
                     {
                         return EnumStatusOrder.OrderNotValidated;
                     }

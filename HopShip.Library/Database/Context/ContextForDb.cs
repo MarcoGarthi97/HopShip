@@ -79,6 +79,7 @@ namespace HopShip.Library.Database.Context
         public async Task<TEntity> InsertAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class
         {
+            ConvertDateTimeFields(entity);
             await Set<TEntity>().AddAsync(entity, cancellationToken);
             await SaveChangesAsync(cancellationToken);
 
@@ -89,6 +90,7 @@ namespace HopShip.Library.Database.Context
         IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
         where TEntity : class
         {
+            ConvertDateTimeFields(entities);
             await Set<TEntity>().AddRangeAsync(entities, cancellationToken);
             await SaveChangesAsync(cancellationToken);
 

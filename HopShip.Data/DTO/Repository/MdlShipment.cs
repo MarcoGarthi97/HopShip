@@ -13,7 +13,7 @@ namespace HopShip.Data.DTO.Repository
         public int Id { get; set; }
 
         [Column("orderid")]
-        public string OrderId { get; set; }
+        public int OrderId { get; set; }
 
         [Column("shipmentstatus")]
         public EnumStatusShipment ShipmentStatus { get; set; }
@@ -22,7 +22,7 @@ namespace HopShip.Data.DTO.Repository
         public DateTime ShipmentDate { get; set; }
 
         [Column("trackingnumber")]
-        public string TrackingNumber { get; set; }
+        public string? TrackingNumber { get; set; }
 
         [Column("createdat")]
         public DateTime CreatedAt { get; set; }
