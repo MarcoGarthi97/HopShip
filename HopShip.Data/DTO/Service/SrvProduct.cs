@@ -1,4 +1,7 @@
 ﻿using HopShip.Data.Enum;
+using HopShip.Library.Context;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace HopShip.Data.DTO.Service
 {

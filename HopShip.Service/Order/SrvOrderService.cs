@@ -15,7 +15,7 @@ namespace HopShip.Service.Order
 {
     public interface ISrvOrderService
     {
-        public Task<SrvOrder> GetOrderAsync(int id, CancellationToken cancellationToken);
+        public Task<SrvOrder> GetOrderAsync(int id, EnumStatusOrder status, CancellationToken cancellationToken);
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(CancellationToken cancellationToken);
         public Task<IEnumerable<SrvOrder>> GetOrdersAsync(IEnumerable<int> ids, CancellationToken cancellationToken);
         public Task<SrvOrder> InsertOrdersAsync(SrvOrder srvOrder, CancellationToken cancellationToken);
@@ -35,11 +35,11 @@ namespace HopShip.Service.Order
             _mapper = mapper;
         }
 
-        public async Task<SrvOrder> GetOrderAsync(int id, CancellationToken cancellationToken)
+        public async Task<SrvOrder> GetOrderAsync(int id, EnumStatusOrder status, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Start GetOrderAsync");
 
-            MdlOrder? mdlOrders = await _repositoryOrder.FirstOrDefaultAsync(x => x.Status == EnumStatusOrder.OrderCreated && x.Id == id, cancellationToken);
+            MdlOrder? mdlOrders = await _repositoryOrder.FirstOrDefaultAsync(x => x.Status == status && x.Id == id, cancellationToken);
             if(mdlOrders != null)
             {
                 SrvOrder srvOrders = _mapper.Map<SrvOrder>(mdlOrders);

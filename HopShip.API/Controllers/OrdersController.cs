@@ -6,6 +6,7 @@ using HopShip.Service.Order;
 using HopShip.Service.OrderProduct;
 using HopShip.Service.Payment;
 using HopShip.Service.RabbitMQ;
+using HopShip.Service.Shipment;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HopShip.API.Controllers
@@ -19,15 +20,17 @@ namespace HopShip.API.Controllers
         private readonly ISrvOrderProductService _serviceOrderProduct;
         private readonly ISrvOrderService _serviceOrder;
         private readonly ISrvPaymentService _servicePayment;
+        private readonly ISrvShipmentService _serviceShipment;
         private readonly ISrvRabbitMQService _rabbitMQService;
 
-        public OrdersController(ILogger<OrdersController> logger, IMapper mapper, ISrvOrderService srvOrderService, ISrvOrderProductService srvOrderProductService, ISrvPaymentService srvPaymentService, ISrvRabbitMQService srvRabbitMQService)
+        public OrdersController(ILogger<OrdersController> logger, IMapper mapper, ISrvOrderService srvOrderService, ISrvOrderProductService srvOrderProductService, ISrvPaymentService srvPaymentService, ISrvShipmentService srvShipmentService, ISrvRabbitMQService srvRabbitMQService)
         {
             _logger = logger;
             _mapper = mapper;
             _serviceOrderProduct = srvOrderProductService;
             _serviceOrder = srvOrderService;
             _servicePayment = srvPaymentService;
+            _serviceShipment = srvShipmentService;
             _rabbitMQService = srvRabbitMQService;
         }
 
@@ -54,8 +57,17 @@ namespace HopShip.API.Controllers
                     PaymentMethod = order.PaymentMethod,
                     PaymentStatus = Data.Enum.EnumStatusPayment.InQueue,
                     PaymentDate = DateTime.Now,
+                    Amount = srvOrder.TotalAmount,
+                    CreateAt = DateTime.Now
                 };
                 await _servicePayment.InsertPaymentAsync(srvPayment, cancellationToken);
+
+                SrvShipment srvShipment = new()
+                {
+                    OrderId = srvOrder.Id,
+                    CreatedAt = DateTime.Now
+                };
+                await _serviceShipment.InsertShipmentAsync(srvShipment, cancellationToken);
 
                 var messageRabbit = _mapper.Map<QueueMessageRabbitMQ>(srvOrder);
 

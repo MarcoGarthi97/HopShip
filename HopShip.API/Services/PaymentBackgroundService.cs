@@ -36,14 +36,13 @@ namespace HopShip.API.Services
             {
                 _logger.LogInformation("Start ExecuteServiceAsync");
 
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    _rabbitService = scope.ServiceProvider.GetRequiredService<ISrvRabbitMQService>();
-                    _paymentService = scope.ServiceProvider.GetRequiredService<ISrvPaymentService>();
-                }
+                var scope = _serviceProvider.CreateScope();
 
                 try
                 {
+                    _rabbitService = scope.ServiceProvider.GetRequiredService<ISrvRabbitMQService>();
+                    _paymentService = scope.ServiceProvider.GetRequiredService<ISrvPaymentService>();
+
                     if (_useSubscriptionMode)
                     {
                         await SubscriptionModeAsync(stoppingToken);
@@ -62,6 +61,7 @@ namespace HopShip.API.Services
                     _cancellationTokenSource?.Cancel();
                     _cancellationTokenSource?.Dispose();
                     _cancellationTokenSource = null;
+                    scope.Dispose();
                 }
 
                 _logger.LogInformation("End ExecuteServiceAsync");
@@ -74,7 +74,7 @@ namespace HopShip.API.Services
 
             _cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
-            await _rabbitService.SubscribeAsync(EnumQueueRabbit.OrderService, async (message) => await ProcessPaymentMessageAsync(message, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
+            await _rabbitService.SubscribeAsync(EnumQueueRabbit.PaymentService, async (message) => await ProcessPaymentMessageAsync(message, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
 
             try
             {
@@ -99,7 +99,7 @@ namespace HopShip.API.Services
                 try
                 {
                     await _rabbitService.ProcessMessageAsync(
-                            EnumQueueRabbit.OrderService,
+                            EnumQueueRabbit.PaymentService,
                             async (message) => await ProcessPaymentMessageAsync(message, stoppingToken),
                             _batchSize,
                             stoppingToken);

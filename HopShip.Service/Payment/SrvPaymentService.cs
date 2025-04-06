@@ -82,7 +82,7 @@ namespace HopShip.Service.Payment
         {
             _logger.LogInformation("Start CheckPaymentAsync");
 
-            SrvOrder order = await _orderService.GetOrderAsync(srvPayment.OrderId, cancellationToken);
+            SrvOrder order = await _orderService.GetOrderAsync(srvPayment.OrderId, EnumStatusOrder.OrderValidated, cancellationToken);
 
             EnumStatusPayment status = EnumStatusPayment.Completed;
             if(order.TotalAmount != srvPayment.Amount)
