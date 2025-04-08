@@ -51,6 +51,7 @@ namespace HopShip.Service.Database
             if(string.IsNullOrEmpty(version))
             {
                 await Version_1_0_0(cancellationToken);
+                await InsertDataAsync(cancellationToken);
             }
 
             _logger.LogInformation("End BuildDatabaseAsync");
