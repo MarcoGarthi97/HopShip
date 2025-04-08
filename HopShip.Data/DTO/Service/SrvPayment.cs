@@ -10,6 +10,6 @@ namespace HopShip.Data.DTO.Service
         public DateTime? PaymentDate { get; set; }
         public decimal Amount { get; set; }
         public EnumMethodPayment PaymentMethod { get; set; }
-        public DateTime CreateAt { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }
