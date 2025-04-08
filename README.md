@@ -37,3 +37,7 @@ flowchart TD
 
     C --> F[Shipping Service]
     F -->|Read/Update Order| B
+```
+
+## ⚙️ Activation Steps
+To correctly activate the application, ensure that all services are enabled by setting the corresponding flags to true in the appsettings.Development.json file. 
