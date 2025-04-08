@@ -23,7 +23,6 @@ namespace HopShip.API.Services
                 {
                     var databaseService = scope.ServiceProvider.GetRequiredService<ISrvDatabaseService>();
                     await databaseService.BuildDatabaseAsync(stoppingToken);
-                    await databaseService.InsertDataAsync(stoppingToken);
                 }
             }
             catch(Exception ex)
