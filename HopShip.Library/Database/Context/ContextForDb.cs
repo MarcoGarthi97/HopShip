@@ -91,6 +91,7 @@ namespace HopShip.Library.Database.Context
         where TEntity : class
         {
             ConvertDateTimeFields(entities);
+
             await Set<TEntity>().AddRangeAsync(entities, cancellationToken);
             await SaveChangesAsync(cancellationToken);
 
@@ -179,7 +180,8 @@ namespace HopShip.Library.Database.Context
 
         public async Task<IEnumerable<TEntity>> BulkUpdateAsync<TEntity>(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default) where TEntity : class
         {
-            foreach(var entity in entities)
+            ConvertDateTimeFields(entities);
+            foreach (var entity in entities)
             {
                 var entry = Entry(entity);
 
@@ -228,7 +230,13 @@ namespace HopShip.Library.Database.Context
 
             return true;
         }
-
+        private void ConvertDateTimeFields<TEntity>(IEnumerable<TEntity> entities) where TEntity : class
+        {
+            foreach (var entity in entities)
+            {
+                ConvertDateTimeFields(entity);  
+            }
+        }
         private void ConvertDateTimeFields<TEntity>(TEntity entity) where TEntity : class
         {
             var properties = typeof(TEntity)

@@ -90,7 +90,7 @@ namespace HopShip.Service.Payment
                 status = EnumStatusPayment.Failed;
             }
 
-            if(srvPayment.PaymentDate < srvPayment.CreateAt)
+            if(srvPayment.PaymentDate < srvPayment.CreatedAt)
             {
                 status = EnumStatusPayment.Failed;
             }

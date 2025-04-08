@@ -58,7 +58,7 @@ namespace HopShip.API.Controllers
                     PaymentStatus = Data.Enum.EnumStatusPayment.InQueue,
                     PaymentDate = DateTime.Now,
                     Amount = srvOrder.TotalAmount,
-                    CreateAt = DateTime.Now
+                    CreatedAt = DateTime.Now
                 };
                 await _servicePayment.InsertPaymentAsync(srvPayment, cancellationToken);
 
